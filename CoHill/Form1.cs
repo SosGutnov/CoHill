@@ -16,6 +16,7 @@ namespace CoHill
         public int[,] A;
         public string InpString;
         public int n;
+        public int N = 26;
         public Form1()
         {
             InitializeComponent();
@@ -40,6 +41,7 @@ namespace CoHill
         private void button1_Click(object sender, EventArgs e)
         {
             GetMassA();
+            GetInverseMatrix(A);
             InpString = textBox1.Text;
             while (InpString.Length % n != 0)
             {
@@ -91,9 +93,9 @@ namespace CoHill
                 int sum = 0;
                 for (int j = 0; j < n; j++)
                 {
-                    sum += (a[i, j] * b[j]) % 26;
+                    sum += (a[i, j] * b[j]) % N;
                 }
-                res[i] = sum % 26;
+                res[i] = sum % N;
             }
             return res;
         }
@@ -108,6 +110,41 @@ namespace CoHill
                     A[i, j] = int.Parse(dataGridViewMain.Rows[i].Cells[j].Value.ToString());
                 }
             }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        public void GetInverseMatrix(int[,] matrix)
+        {
+            int[,] newMatrix = new int[n, n];
+            int opr = GetOpr(matrix); //находим определитель
+            int invOpr = GetInverseOprforModule(opr, N); // обратное определителю по модулю
+            //MessageBox.Show(opr.ToString()+ ',' + invOpr.ToString());
+        }
+
+        public int GetOpr(int[,] matrix)
+        {
+            return ((matrix[0, 0] * matrix[1, 1] * matrix[2, 2]
+                + matrix[1, 0] * matrix[2, 1] * matrix[0, 2]
+                + matrix[0, 1] * matrix[1, 2] * matrix[2, 0])
+                - (matrix[0, 2] * matrix[1, 1] * matrix[2, 0]
+                + matrix[0, 0] * matrix[1, 2] * matrix[2, 1]
+                + matrix[2, 2] * matrix[0, 1] * matrix[1, 0]) + N*100) % N;
+        }
+
+        public int GetInverseOprforModule(int opr, int mod)
+        {
+            for (int i = 0; i < mod; i++)
+            {
+                if ((opr * i) % mod == 1)
+                {
+                    return i;
+                }
+            }
+            return 1;
         }
     }
 }
